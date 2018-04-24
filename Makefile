@@ -12,7 +12,7 @@ LDFLAGS = -L/scratch/perkins/lib
 LDLIBS = -lcdk -lcurses
 
 # We choose the project name.  This is used in building the file name for the backup target
-PROJECTNAME = program6 
+PROJECTNAME = program6
 
 # We choose the source files to include and name the output
 SRCS = cdkexample.cc 
