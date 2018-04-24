@@ -4,6 +4,7 @@
 
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include "cdk.h"
 #include "BinaryFileRecord.h"
 
@@ -68,31 +69,39 @@ ifstream binInfile("cs3377.bin", ios::in | ios::binary);
 binInfile.read((char*)header, sizeof(BinaryFileHeader));
 
 //display header contenets
-setCDKMatrixCell(myMatrix, 1, 1, "Magic: ");
-setCDKMatrixCell(myMatrix, 1, 2, "Version: " );
-setCDKMatrixCell(myMatrix, 1, 3, "NumRecords: " );
+//use stringstream to format hex number
+stringstream ss;
+//magic number
+ss << "Magic: 0x" << uppercase <<  hex << header->magicNumber;
+const char* arg = ss.str().c_str();
+setCDKMatrixCell(myMatrix, 1, 1, arg);
+//version number
+stringstream ver;
+ver << "Version: " << fixed  << header->versionNumber;
+arg = ver.str().c_str();
+setCDKMatrixCell(myMatrix, 1, 2, arg );
+//number of records
+stringstream rec;
+rec << "NumRecords: " << header->numRecords;
+arg = rec.str().c_str();
+setCDKMatrixCell(myMatrix, 1, 3, arg);
 
 // get input from cs3377.bin
 BinaryFileRecord *myRecord = new BinaryFileRecord();
-binInfile.read((char*)myRecord, sizeof(BinaryFileRecord));
-setCDKMatrixCell(myMatrix, 2, 1, "strlen: " );
-setCDKMatrixCell(myMatrix, 2, 2, myRecord->stringBuffer );
+int records = header->numRecords;
+for(int i=1; i <= records; i++)
+{
 
-binInfile.read((char*)myRecord, sizeof(BinaryFileRecord));
-setCDKMatrixCell(myMatrix, 3, 1, "strlen: " );
-setCDKMatrixCell(myMatrix, 3, 2, myRecord->stringBuffer );
-
-
-binInfile.read((char*)myRecord, sizeof(BinaryFileRecord));
-setCDKMatrixCell(myMatrix, 4, 1, "strlen: " );
-setCDKMatrixCell(myMatrix, 4, 2, myRecord->stringBuffer);
-
-
-binInfile.read((char*)myRecord, sizeof(BinaryFileRecord));
-setCDKMatrixCell(myMatrix, 5, 1, "strlen: " );
-setCDKMatrixCell(myMatrix, 5, 2, myRecord->stringBuffer);
-
-binInfile.close();
+	binInfile.read((char*)myRecord, sizeof(BinaryFileRecord));
+	//get the length of string
+	stringstream len;
+	len << "strlen: " << (int)myRecord->strLength;
+	arg = len.str().c_str();
+	//print the size
+	setCDKMatrixCell(myMatrix, i+1, 1, arg);
+	//print char*
+	setCDKMatrixCell(myMatrix, i+1, 2, myRecord->stringBuffer );
+}
 
 
   /*
